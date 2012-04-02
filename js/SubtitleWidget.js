@@ -18,51 +18,99 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("fluid.subtitleWidget", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
+        preInitFunction: "fluid.subtitleWidget.preInit",
+        postInitFunction: "fluid.subtitleWidget.postInit",
         finalInitFunction: "fluid.subtitleWidget.finalInit",
         events: {
-            onReady: null
+            onReady: null,
+            onUnisub: null,
+            onFetcher: null,
+            createWidget: {
+                events: {
+                    unisub: "{fluid.subtitleWidget}.events.onUnisub",
+                    fetcher: "{fluid.subtitleWidget}.events.onFetcher"
+                }
+            }
+        },
+        listeners: {
+            createWidget: {
+                listener: "{fluid.subtitleWidget}.createWidgetHandler",
+                priority: "last"
+            }
         },
         styles: {
             mainWrap: "fl-subtitle-mainWrap",
             videoWrap: "fl-subtitle-videoWrap",
             widgetWrap: "fl-subtitle-widgetWrap"
         },
+/*
         components: {
             widget: {
                 type: "fluid.videoPlayer.controllers.languageMenu",
                 container: "{subtitleWidget}.widgetWrap",
-                createOnEvent: "onMarkupReady",
+                createOnEvent: "createWidget",
                 options: {
                 }
             }
         },
-        events: {
-            onMarkupReady: null
+*/
+        components: {
+            unisub: {
+                type: "fluid.unisubComponent",
+                options: {
+                    videoLink: "http://www.youtube.com/v/yEAxG_D1HDw?hl=en_US&fs=1&rel=0&hd=1&border=0&enablejsapi=1",
+                    events: {
+                        onReady: "{fluid.subtitleWidget}.events.onUnisub"
+                    }
+                }
+            },
+            resourceFetcher: {
+                type: "fluid.resourceFetcher",
+                options: {
+                    resourceTemplate: "../html/videoPlayer_template.html",
+                    events: {
+                        onReady: "{fluid.subtitleWidget}.events.onFetcher"
+                    }
+                }
+            }
         },
         videoSelector: null,    // A class we will use to get the iframe with the video
         mainWrap: null,
         widgetWrap: null,
         videoWrap: null
     });
+
+    fluid.subtitleWidget.preInit = function (that) {
+        that.createWidgetHandler = function () {
+            that.events.onReady.fire(that);
+        };
+    };
     
-    fluid.subtitleWidget.finalInit = function (that) {
-        
+    fluid.subtitleWidget.postInit = function (that) {
         var styles = that.options.styles;
         var videoIframe = $(that.options.videoSelector);
         
         // First create a markup for the video where we want to attach our widget
-        that.mainWrap = $("<div />").addClass(styles.mainWrap);
-        that.widgetWrap = $("<div />").addClass(styles.widgetWrap);
-        that.videoWrap = $("<div/>").addClass(styles.videoWrap);
+        var mainWrap = $("<div />").addClass(styles.mainWrap);
+        var widgetWrap = $("<div />").addClass(styles.widgetWrap);
+        var videoWrap = $("<div/>").addClass(styles.videoWrap);
         
-        that.mainWrap.append(that.widgetWrap);
-        that.mainWrap.append(that.videoWrap);
+        mainWrap.append(widgetWrap);
+        mainWrap.append(videoWrap);
                 
-        that.mainWrap.insertBefore(videoIframe);
+        mainWrap.insertBefore(videoIframe);
                 
-        videoIframe.appendTo(that.videoWrap);
+        videoIframe.appendTo(videoWrap);
         
-        that.events.onMarkupReady.fire();
+        that.mainWrap = mainWrap;
+        that.widgetWrap = widgetWrap;
+        that.videoWrap = videoWrap;
+    };
+    
+    fluid.subtitleWidget.finalInit = function (that) {
+        
+        
+        
         that.events.onReady.fire(that);
     };
 
