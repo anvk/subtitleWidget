@@ -18,7 +18,8 @@
         <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
 
         <!-- VideoPlayer dependencies -->
-        <script type="text/javascript" src="../js/SubtitleWidget.js"></script>
+        <script type="text/javascript" src="../js/MenuButton.js"></script>
+        <script type="text/javascript" src="../js/UniSubComponent.js"></script>
     </head>
 
     <body>
@@ -26,7 +27,11 @@
     </body>
     
     <script>
-        fluid.subtitleWidget(".flc-video", {
+
+        
+        fluid.unisubComponent({
+            videoLink: "http://www.youtube.com/v/yEAxG_D1HDw?hl=en_US&fs=1&rel=0&hd=1&border=0&enablejsapi=1",
+            loadCaptions: false
         });
     </script>
 
