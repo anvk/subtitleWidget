@@ -43,17 +43,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoWrap: "fl-subtitle-videoWrap",
             widgetWrap: "fl-subtitle-widgetWrap"
         },
-/*
-        components: {
-            widget: {
-                type: "fluid.videoPlayer.controllers.languageMenu",
-                container: "{subtitleWidget}.widgetWrap",
-                createOnEvent: "createWidget",
-                options: {
-                }
-            }
-        },
-*/
         components: {
             unisub: {
                 type: "fluid.unisubComponent",
@@ -67,10 +56,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             resourceFetcher: {
                 type: "fluid.resourceFetcher",
                 options: {
-                    resourceTemplate: "../html/videoPlayer_template.html",
+                    resourceTemplate: "../html/MenuButton_template.html",
+                    containerBody: "{fluid.subtitleWidget}.options.widgetWrap",
                     events: {
                         onReady: "{fluid.subtitleWidget}.events.onFetcher"
                     }
+                }
+            },
+            widget: {
+                type: "fluid.videoPlayer.controllers.languageMenu",
+                createOnEvent: "createWidget",
+                container: "{subtitleWidget}.widgetWrap",
+                options: {
                 }
             }
         },
@@ -102,9 +99,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
         videoIframe.appendTo(videoWrap);
         
-        that.mainWrap = mainWrap;
-        that.widgetWrap = widgetWrap;
-        that.videoWrap = videoWrap;
+        that.options.mainWrap = mainWrap;
+        that.options.widgetWrap = widgetWrap;
+        that.options.videoWrap = videoWrap;
     };
     
     fluid.subtitleWidget.finalInit = function (that) {

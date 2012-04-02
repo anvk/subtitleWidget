@@ -22,21 +22,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null
         },
-        resourceTemplate: null
+        resourceTemplate: null,
+        resourceSpec: {
+            template: {
+                href: null,
+                options: {
+                    dataType: "html",
+                    forceCache: true
+                }
+            }
+        },
+        containerBody: null
     });
     
     fluid.resourceFetcher.finalInit = function (that) {
         
-        fluid.fetchResources({
-                template: {
-                    href: that.resourceTemplate,
-                    dataType: "html",
-                    forceCache: true
-                }
-            },
-            function() {
-                alert("got data!");
-                that.events.onReady.fire(that);
+        var resourceSpec = that.options.resourceSpec;
+        resourceSpec.template.href = that.options.resourceTemplate;
+        
+        fluid.fetchResources(resourceSpec, function(resourceSpec) {
+            that.options.containerBody.html(resourceSpec.template.resourceText);
+            that.events.onReady.fire(that);
         });
     };
 
