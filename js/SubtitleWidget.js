@@ -21,20 +21,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.subtitleWidget.preInit",
         postInitFunction: "fluid.subtitleWidget.postInit",
         finalInitFunction: "fluid.subtitleWidget.finalInit",
+        model: {
+            languages: []
+        },
         events: {
             onReady: null,
             onUnisub: null,
             onFetcher: null,
-            createWidget: {
+            createPanel: {
                 events: {
                     unisub: "{fluid.subtitleWidget}.events.onUnisub",
                     fetcher: "{fluid.subtitleWidget}.events.onFetcher"
                 }
-            }
+            },
+            modelReady: null
         },
         listeners: {
-            createWidget: {
-                listener: "{fluid.subtitleWidget}.createWidgetHandler",
+            createPanel: {
+                listener: "{fluid.subtitleWidget}.createPanelHandler",
                 priority: "last"
             }
         },
@@ -43,20 +47,33 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoWrap: "fl-subtitle-videoWrap",
             widgetWrap: "fl-subtitle-widgetWrap"
         },
+        videoLink: "http://www.youtube.com/v/yEAxG_D1HDw?hl=en_US&fs=1&rel=0&hd=1&border=0&enablejsapi=1",
         components: {
             unisub: {
                 type: "fluid.unisubComponent",
                 options: {
-                    videoLink: "http://www.youtube.com/v/yEAxG_D1HDw?hl=en_US&fs=1&rel=0&hd=1&border=0&enablejsapi=1",
+                    videoLink: "{subtitleWidget}.options.videoLink",
+                    model: "{subtitleWidget}.model",
+                    applier: "{subtitleWidget}.applier",
                     events: {
-                        onReady: "{fluid.subtitleWidget}.events.onUnisub"
+                        onReady: "{fluid.subtitleWidget}.events.onUnisub",
+                        modelReady: "{fluid.subtitleWidget}.events.modelReady"
                     }
                 }
             },
+/*
+            subtitleMapper: {
+                type: "fluid.subtitleMapper",
+                options: {
+                    model: "{subtitleWidget}.model",
+                },
+                createOnEvent: "modelReady"
+            },
+*/
             resourceFetcher: {
                 type: "fluid.resourceFetcher",
                 options: {
-                    resourceTemplate: "../html/MenuButton_template.html",
+                    resourceTemplate: "../html/SubtitlePanel_template.html",
                     containerBody: "{fluid.subtitleWidget}.options.widgetWrap",
                     events: {
                         onReady: "{fluid.subtitleWidget}.events.onFetcher"
@@ -64,10 +81,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             widget: {
-                type: "fluid.videoPlayer.controllers.languageMenu",
-                createOnEvent: "createWidget",
-                container: "{subtitleWidget}.widgetWrap",
+                type: "fluid.subtitlePanel",
+                createOnEvent: "createPanel",
+                container: "{subtitleWidget}.options.widgetWrap",
                 options: {
+                    videoLink: "{subtitleWidget}.options.videoLink",
+                    resources: "{resourceFetcher}.options.resources",
+                    model: "{subtitleWidget}.model"
                 }
             }
         },
@@ -78,7 +98,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.subtitleWidget.preInit = function (that) {
-        that.createWidgetHandler = function () {
+        that.createPanelHandler = function () {
             that.events.onReady.fire(that);
         };
     };
@@ -105,10 +125,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.subtitleWidget.finalInit = function (that) {
-        
-        
-        
-        that.events.onReady.fire(that);
+        var b = 6;
     };
 
 

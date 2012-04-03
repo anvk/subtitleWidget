@@ -17,15 +17,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
 
     fluid.defaults("fluid.unisubComponent", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         finalInitFunction: "fluid.unisubComponent.finalInit",
         preInitFunction: "fluid.unisubComponent.preInit",
+        model: {
+            languages: []
+        },
         events: {
-            onReady: null
+            onReady: null,
+            modelReady: null
         },
         unisubLanguageLink: "http://www.universalsubtitles.org/api/1.0/subtitles/languages/",
-        videoLink: null,
-        languages: []
+        videoLink: null
     });
     
     fluid.unisubComponent.preInit = function (that) {
@@ -34,7 +37,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 dataType: "jsonp",
                 url: options.url,
                 success: function (data) {
-                    that.languages = data;
+                    that.applier.requestChange("languages", data);
+                    that.events.modelReady.fire();
                     that.events.onReady.fire(that);
                 }
             });
@@ -42,9 +46,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         that.createUniSubURL = function(apiURL, videoURL) {
             return "".concat(apiURL, "?video_url=", videoURL);
-        };
-        
-        that.getCaptions = function() {
         };
     };
     

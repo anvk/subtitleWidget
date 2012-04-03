@@ -23,7 +23,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null
         },
         resourceTemplate: null,
-        resourceSpec: {
+        resources: {
             template: {
                 href: null,
                 options: {
@@ -37,11 +37,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.resourceFetcher.finalInit = function (that) {
         
-        var resourceSpec = that.options.resourceSpec;
+        var resourceSpec = that.options.resources;
         resourceSpec.template.href = that.options.resourceTemplate;
         
         fluid.fetchResources(resourceSpec, function(resourceSpec) {
-            that.options.containerBody.html(resourceSpec.template.resourceText);
             that.events.onReady.fire(that);
         });
     };
