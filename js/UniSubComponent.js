@@ -16,6 +16,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
 
+    "use strict";
+
     fluid.defaults("fluid.unisubComponent", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         finalInitFunction: "fluid.unisubComponent.finalInit",
@@ -25,41 +27,70 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
-            modelReady: null
+            modelReady: null,
+            onVideo: null
         },
-        unisubLanguageLink: "http://www.universalsubtitles.org/api/1.0/subtitles/languages/",
-        videoLink: null
+        listeners: {
+            onVideo: "{fluid.unisubComponent}.onVideoHandler"
+        },
+        "api-key": "0c01f5ca0ec8d1dc4e9e0f320a4d1afb1a50273d",
+        "api-password": "idrcunisub",
+        "api-username": "idrc",
+        urls: {
+            //api: "https://www.universalsubtitles.org/api2/partners/videos",
+            apiLanguages: "http://www.universalsubtitles.org/api/1.0/subtitles/languages/",
+            apiVideo: "http://www.universalsubtitles.org/api/1.0/video/",
+            video: null
+        }
     });
     
     fluid.unisubComponent.preInit = function (that) {
-        that.loadLanguages = function (options) {
+        that.onVideoHandler = function (options) {
             $.ajax({
                 dataType: "jsonp",
-                url: options.url,
-                success: function (data) {
-                    that.applier.requestChange("languages", data);
-                    that.events.modelReady.fire();
-                    that.events.onReady.fire(that);
-                }
+                url: options.url
+            }).done(function (data) {
+                that.applier.requestChange("languages", data);
+                that.events.modelReady.fire();
+                that.events.onReady.fire(that);
+            });
+        };
+
+        that.loadVideoMetaData = function (options) {
+            $.ajax({
+                dataType: "jsonp",
+                url: options.url
+            }).done(function (data) {
+                that.applier.requestChange("video", data);
+                that.events.onVideo.fire({
+                    url: that.buildUrl(that.options.urls.apiLanguages, {
+                        video_url: that.options.urls.video
+                    })
+                });
             });
         };
         
-        that.createUniSubURL = function(apiURL, videoURL) {
-            return "".concat(apiURL, "?video_url=", videoURL);
+        that.buildUrl = function (baseURL, params) {
+            return [baseURL, "?", $.param(params)].join("");
         };
     };
     
     fluid.unisubComponent.finalInit = function (that) {
-        
-        var options = that.options;
-        var callbackName = options.callbackName;
-        
+        that.loadVideoMetaData({
+            url: that.buildUrl(that.options.urls.apiVideo, {
+                username: that.options["api-username"],
+                password: that.options["api-password"],
+                video_url: that.options.urls.video
+            })
+        });
+/*
         var URL = that.createUniSubURL(options.unisubLanguageLink, options.videoLink);
         
         that.loadLanguages({
             callback: callbackName,
             url: URL
         });
+*/
     };
 
 })(jQuery);

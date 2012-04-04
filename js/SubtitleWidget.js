@@ -52,7 +52,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             unisub: {
                 type: "fluid.unisubComponent",
                 options: {
-                    videoLink: "{subtitleWidget}.options.videoLink",
+                    urls: {
+                        video: "{subtitleWidget}.options.videoLink"
+                    },
                     model: "{subtitleWidget}.model",
                     applier: "{subtitleWidget}.applier",
                     events: {

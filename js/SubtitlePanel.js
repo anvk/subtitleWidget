@@ -26,7 +26,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         model: {
             languages: []
         },
-        baseURL: "",
         protoTree: {
             menu: {
                 decorators: [{
@@ -45,9 +44,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     languageLink: {
                         target: "${{lang}.href}",
                         linktext: "${{lang}.name}",
-                        decorators: {
+                        decorators: [{
                             addClass: "{styles}.languageLink"
+                        }/*
+, {
+                            type: "fluid",
+                            func: "fluid.tooltip",
+                            options: {
+                                content: "YO MAMA"
+                            }
                         }
+*/]
                     }
                 }
             }, {
@@ -55,7 +62,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 condition: "${haveSubtitles}",
                 trueTree: {
                     addSubtitle: {
-                        target: "YO MAMA",
+                        target: "${addSubtitleLink}",
                         linktext: {
                             messagekey: "addSubtitle"
                         },
@@ -96,6 +103,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         listeners: {
             afterRender: "{fluid.subtitlePanel}.afterRenderHanlder"
         },
+        urls: {
+            subtitle: "http://www.universalsubtitles.org/en/videos/%videoId/%lang/%subtitleId/",
+            addSubtitle: "http://www.universalsubtitles.org/en/videos/%videoId/"
+        },
         strings: {
             label: "CURRENT SUBTITLES",
             addSubtitle: "add subtitle"
@@ -105,10 +116,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.subtitlePanel.preInit = function (that) {
 /*         that.applier.requestChange("languages", []); */
         that.applier.requestChange("haveSubtitles", that.model.languages.length > 0);
+        that.applier.requestChange("addSubtitleLink", fluid.stringTemplate(that.options.urls.addSubtitle, {
+            videoId: that.model.video.video_id
+        }));
+
+        that.options.urls.subtitle = fluid.stringTemplate(that.options.urls.subtitle, {
+            videoId: that.model.video.video_id
+        });
+
         var languages = that.model.languages;
         fluid.each(languages, function (language, index) {
             var lang = fluid.copy(language);
-            lang.href = "";
+            lang.href = fluid.stringTemplate(that.options.urls.subtitle, {
+                lang: language.code,
+                subtitleId: language.id
+            });
             that.applier.requestChange(fluid.model.composeSegments("languages", index), lang);
         });
 
@@ -133,10 +155,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         var union = menu.add(languages);
         fluid.deadMansBlur(union, {
-                exclusions: {union: union}, 
-                    handler: function () {
-                    languages.hide();
-                }
+            exclusions: {union: union}, 
+                handler: function () {
+                languages.hide();
+            }
         });
 
         that.events.onReady.fire(that);
@@ -168,7 +190,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 },
                 falseTree: {
                     addSubtitle: {
-                        target: "YO MAMA",
+                        target: "${addSubtitleLink}",
                         linktext: {
                             messagekey: "addSubtitle"
                         },
