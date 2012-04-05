@@ -19,6 +19,7 @@
     border-color: #E0E0E0;
     border-width: 2px;
     width: 200px;
+    text-shadow: #ffffff 1px 1px 1px;
 }
 .fl-subtitle-panel-languages {
     list-style-type: none;
@@ -42,7 +43,7 @@
     text-overflow: ellipsis;
     width: 163px;
     min-height: 19px;
-    border-top: #E0E0E0 2px solid; 
+    border-top: #E0E0E0 2px solid;
 }
 .fl-subtitle-panel-languages li a:hover {
     color: #9BCB37;
@@ -65,4 +66,12 @@
 .fl-subtitle-panel-menu .fl-subtitle-panel-addSubtitle:hover {
     background-image: url(../images/arrow-hover.png);
     color: #9BCB37;
+}
+.fl-subtitle-panel-tooltip {
+    position    : absolute;
+    padding     : 3px 5px;
+    background-color: #FFCB33;
+    color: black;
+    font-family: "Myriad Pro",Helvetica,sans-serif;
+    border: #F6E8C4 1px solid; 
 }

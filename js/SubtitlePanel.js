@@ -46,15 +46,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         linktext: "${{lang}.name}",
                         decorators: [{
                             addClass: "{styles}.languageLink"
-                        }/*
-, {
+                        }, {
                             type: "fluid",
-                            func: "fluid.tooltip",
+                            func: "fluid.subtitlePanel.tooltip",
                             options: {
-                                content: "YO MAMA"
+                                content: "${editSubtitles}"
                             }
-                        }
-*/]
+                        }]
                     }
                 }
             }, {
@@ -98,10 +96,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
-            onHover: null
+            onHover: null,
+            onShow: null,
+            onHide: null
         },
         listeners: {
-            afterRender: "{fluid.subtitlePanel}.afterRenderHanlder"
+            afterRender: "{fluid.subtitlePanel}.afterRenderHanlder",
+            onShow: "{fluid.subtitlePanel}.show",
+            onHide: "{fluid.subtitlePanel}.hide"
         },
         urls: {
             subtitle: "http://www.universalsubtitles.org/en/videos/%videoId/%lang/%subtitleId/",
@@ -109,7 +111,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         strings: {
             label: "CURRENT SUBTITLES",
-            addSubtitle: "add subtitle"
+            addSubtitle: "add subtitle",
+            editSubtitles: "edit subtitles",
+            helpImageToolTip: "edit or add subtitles for this video"
         }
     });
 
@@ -119,6 +123,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.requestChange("addSubtitleLink", fluid.stringTemplate(that.options.urls.addSubtitle, {
             videoId: that.model.video.video_id
         }));
+        that.applier.requestChange("editSubtitles", that.options.strings.editSubtitles);
+        that.applier.requestChange("helpImageToolTip", that.options.strings.helpImageToolTip);
 
         that.options.urls.subtitle = fluid.stringTemplate(that.options.urls.subtitle, {
             videoId: that.model.video.video_id
@@ -136,10 +142,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.afterRenderHanlder = function () {
             that.container.hover(function () {
-                that.locate("languages").show();
+                that.events.onShow.fire();
             }, function () {
-                that.locate("languages").hide();
+                that.events.onHide.fire();
             });
+        };
+        that.show = function () {
+            that.locate("languages").show();
+        };
+        that.hide = function () {
+            that.locate("languages").hide();
         };
     };
     
@@ -164,6 +176,46 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onReady.fire(that);
     };
 
+    fluid.demands("fluid.subtitlePanel.tooltip", "fluid.subtitlePanel", {
+        mergeAllOptions: [{
+            events: {
+                onShow: "{fluid.subtitlePanel}.events.onShow",
+                onHide: "{fluid.subtitlePanel}.events.onHide"
+            }
+        }, "{arguments}.1"]
+    });
+
+    fluid.defaults("fluid.subtitlePanel.tooltip", {
+        gradeNames: ["autoInit", "fluid.viewComponent"],
+        finalInitFunction: "fluid.subtitlePanel.tooltip.finalInit",
+        styles: {
+            tooltip: "fl-subtitle-panel-tooltip"
+        },
+        events: {
+            onShow: null,
+            onHide: null
+        },
+        position: {
+			my: "left top",
+			at: "left bottom",
+			offset: "5px 0px"
+		}
+    });
+    fluid.subtitlePanel.tooltip.finalInit = function (that) {
+        that.tooltip = fluid.tooltip(that.container, {
+            styles: that.options.styles,
+            position: that.options.position,
+            content: function () {
+                return that.options.content;
+            }
+        });
+        that.tooltip.elm.hover(function () {
+            that.events.onShow.fire();
+        }, function () {
+            that.events.onHide.fire();
+        });
+    };
+
     fluid.defaults("fluid.subtitlePanel.menu", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         selectors: {
@@ -174,6 +226,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         styles: {
             label: "fl-subtitle-panel-menu-label",
             tooltip: "fl-subtitle-panel-menu-tooltip"
+        },
+        model: {
+            tooltipImgSrc: "../images/help-default.png"
         },
         renderOnInit: true,
         protoTree: {
@@ -201,9 +256,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             tooltip: {
-                decorators: {
+                decorators: [{
                     addClass: "{styles}.tooltip"
-                }
+                }, {
+                    type: "fluid",
+                    func: "fluid.subtitlePanel.tooltip",
+                    options: {
+                        content: "${helpImageToolTip}",
+                        position: {
+                            my: "right top",
+                			at: "left bottom",
+                			offset: "0 5px"
+                        }
+                    }
+                }, {
+                    type: "attrs",
+                    attributes: {
+                        src: "${tooltipImgSrc}",
+                        alt: "${helpImageToolTip}"
+                    }
+                }]
             }
         }
     });

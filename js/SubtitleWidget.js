@@ -63,15 +63,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             },
-/*
-            subtitleMapper: {
-                type: "fluid.subtitleMapper",
-                options: {
-                    model: "{subtitleWidget}.model",
-                },
-                createOnEvent: "modelReady"
-            },
-*/
             resourceFetcher: {
                 type: "fluid.resourceFetcher",
                 options: {
