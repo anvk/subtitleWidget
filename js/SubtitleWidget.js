@@ -66,7 +66,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             resourceFetcher: {
                 type: "fluid.resourceFetcher",
                 options: {
-                    resourceTemplate: "../html/SubtitlePanel_template.html",
+                    resourceTemplate: "{fluid.subtitleWidget}.options.templateUrl",
                     containerBody: "{fluid.subtitleWidget}.options.widgetWrap",
                     events: {
                         onReady: "{fluid.subtitleWidget}.events.onFetcher"
@@ -84,6 +84,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
+        templateUrl: "../html/SubtitlePanel_template.html",
         mainWrap: null,
         widgetWrap: null,
         videoWrap: null
@@ -96,11 +97,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.subtitleWidget.getUrl = function (that) {
-        var data = that.container.data("load-embed-url");
-        if (!data) {
-            return;
-        }
-        return data.url;
+        return that.container.data("url");
     }; 
     
     fluid.subtitleWidget.postInit = function (that) {

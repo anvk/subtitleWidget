@@ -12,6 +12,9 @@
     float: right;
     font-family: "Myriad Pro",Helvetica,sans-serif;
 }
+div.fl-subtitle-widgetWrap, div.fl-subtitle-mainWrap, div.fl-subtitle-panel, div.fl-subtitle-panel div.fl-subtitle-panel-menu, div.fl-subtitle-panel .fl-subtitle-panel-languages {
+    margin-bottom: 0;
+}
 .fl-subtitle-panel-menu {
     background-color: #E6E6E6;
     padding: 8px;
