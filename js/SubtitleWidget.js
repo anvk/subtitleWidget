@@ -20,7 +20,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.viewComponent", "autoInit"],
         preInitFunction: "fluid.subtitleWidget.preInit",
         postInitFunction: "fluid.subtitleWidget.postInit",
-        finalInitFunction: "fluid.subtitleWidget.finalInit",
         model: {
             languages: []
         },
@@ -47,13 +46,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoWrap: "fl-subtitle-videoWrap",
             widgetWrap: "fl-subtitle-widgetWrap"
         },
-        videoLink: "http://www.youtube.com/v/yEAxG_D1HDw?hl=en_US&fs=1&rel=0&hd=1&border=0&enablejsapi=1",
+        url: "",
+        getUrl: "fluid.subtitleWidget.getUrl",
         components: {
             unisub: {
                 type: "fluid.unisubComponent",
                 options: {
                     urls: {
-                        video: "{subtitleWidget}.options.videoLink"
+                        video: "{subtitleWidget}.options.url"
                     },
                     model: "{subtitleWidget}.model",
                     applier: "{subtitleWidget}.applier",
@@ -78,13 +78,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "createPanel",
                 container: "{subtitleWidget}.options.widgetWrap",
                 options: {
-                    videoLink: "{subtitleWidget}.options.videoLink",
+                    videoLink: "{subtitleWidget}.options.url",
                     resources: "{resourceFetcher}.options.resources",
                     model: "{subtitleWidget}.model"
                 }
             }
         },
-        videoSelector: null,    // A class we will use to get the iframe with the video
         mainWrap: null,
         widgetWrap: null,
         videoWrap: null
@@ -95,10 +94,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onReady.fire(that);
         };
     };
+
+    fluid.subtitleWidget.getUrl = function (that) {
+        var data = that.container.data("load-embed-url");
+        if (!data) {
+            return;
+        }
+        return data.url;
+    }; 
     
     fluid.subtitleWidget.postInit = function (that) {
+
+        if (!that.options.url) {
+            var getUrl = that.options.getUrl;
+            that.options.url = typeof getUrl === "string" ? fluid.invokeGlobalFunction(getUrl, [that]) : getUrl(that);
+        }
+
         var styles = that.options.styles;
-        var videoIframe = $(that.options.videoSelector);
+        var container = that.container;
         
         // First create a markup for the video where we want to attach our widget
         var mainWrap = $("<div />").addClass(styles.mainWrap);
@@ -108,17 +121,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         mainWrap.append(widgetWrap);
         mainWrap.append(videoWrap);
                 
-        mainWrap.insertBefore(videoIframe);
+        mainWrap.insertBefore(container);
                 
-        videoIframe.appendTo(videoWrap);
+        container.appendTo(videoWrap);
         
         that.options.mainWrap = mainWrap;
         that.options.widgetWrap = widgetWrap;
         that.options.videoWrap = videoWrap;
-    };
-    
-    fluid.subtitleWidget.finalInit = function (that) {
-        var b = 6;
     };
 
 
