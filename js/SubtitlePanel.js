@@ -198,7 +198,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         position: {
 			my: "left top",
 			at: "left bottom",
-			offset: "5px 0px"
+			offset: "0.313em 0em"
 		}
     });
     fluid.subtitlePanel.tooltip.finalInit = function (that) {
@@ -266,7 +266,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         position: {
                             my: "right top",
                 			at: "left bottom",
-                			offset: "0 5px"
+                			offset: "0em 0.313em"
                         }
                     }
                 }, {
