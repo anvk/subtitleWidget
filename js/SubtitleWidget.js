@@ -42,9 +42,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         styles: {
-            mainWrap: "fl-subtitle-mainWrap",
-            videoWrap: "fl-subtitle-videoWrap",
-            widgetWrap: "fl-subtitle-widgetWrap"
+            mainWrap: "flc-subtitle-mainWrap fl-subtitle-mainWrap",
+            videoWrap: "flc-subtitle-videoWrap fl-subtitle-videoWrap",
+            widgetWrap: "flc-subtitle-widgetWrap fl-subtitle-widgetWrap"
         },
         url: "",
         getUrl: "fluid.subtitleWidget.getUrl",
